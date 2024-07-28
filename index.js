@@ -18,28 +18,40 @@ const db = new pg.Client({
 
 db.connect();
 
-app.get("/", async (req, res) => {
+async function checkVisitedCountries(){
   const result = await db.query("SELECT * FROM visited_countries");
-  const visited_countries = result.rows.map(country => country.country_code);
+  return result.rows.map(country => country.country_code);
+}
+
+app.get("/", async (req, res) => {
+  const visited_countries = await checkVisitedCountries();
 
   res.render("index.ejs", {countries: visited_countries, total: visited_countries.length})
 
 });
 
 app.post("/add", async (req, res) => {
-
   const inputCountry = req.body.country;
-  const result = await db.query("SELECT country_code FROM countries WHERE country_name = $1", [inputCountry]);
   
-  if (result.rows.length > 0){
+  try{
+    const countryPattern = `.*${inputCountry}.*`
+    const result = await db.query("SELECT country_code FROM countries WHERE country_name ~* $1", [countryPattern]);
     const country_code = result.rows[0].country_code;
     
-    await db.query("INSERT INTO visited_countries (country_code) VALUES ($1)", [country_code]);
-    res.redirect("/");
-  } else {
-    console.error("Error 404. This country does not exist");
-    res.redirect("/");
+    try{
+      await db.query("INSERT INTO visited_countries (country_code) VALUES ($1)", [country_code]);
+      res.redirect("/")
+
+    } catch(error) {
+      const visited_countries = await checkVisitedCountries();
+      res.render("index.ejs", {countries: visited_countries, total: visited_countries.length, error: "Country has already been added, try again.",})
+    }
+  } catch (error) {
+    console.log(error);
+    const visited_countries = await checkVisitedCountries();
+    res.render("index.ejs", {countries: visited_countries, total: visited_countries.length, error: "Country name does not exist, try again."})
   }
+
 })
 
 
