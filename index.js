@@ -60,7 +60,7 @@ app.post("/add", async (req, res) => {
     const country_code = result.rows[0].country_code;
     
     try{
-      await db.query("INSERT INTO visited_countries (country_code) VALUES ($1)", [country_code]);
+      await db.query("INSERT INTO visited_countries (country_code, user_id) VALUES ($1, $2)", [country_code, currentUserId]);
       res.redirect("/")
 
     } catch(error) {
@@ -99,6 +99,15 @@ app.post("/user", (req, res) => {
   }
 })
 
+app.post("/new", async (req, res) => {
+  const name = req.body.name;
+  const colour = req.body.colour
+  
+  const result = await db.query("INSERT INTO users(name, colour) VALUES ($1, $2) RETURNING *", [name, colour]);
+  currentUserId = result.rows[0].id;
+
+  res.redirect("/")
+})
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
