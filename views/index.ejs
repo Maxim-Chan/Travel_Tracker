@@ -10,21 +10,21 @@
 
 <body>
   <form class="tab-view tab-view-height-auto" action="/user" method="post">
-    <% users.forEach(function(user) { %>
+    <% users.forEach(user => { %>
       <input type="submit" name="user" value="<%= user.id %>" id="<%= user.id %>">
-      <label for="<%= user.id %>" style="background-color: <%= user.color %>;">
+      <label for="<%= user.id %>" style="background-color: <%= user.colour %>;">
         <%= user.name %>
       </label>
       <% }); %>
 
-        <input type="submit" name="add" value="new" id="tab">
-        <label for="tab">Add Family Member</label>
+      <input type="submit" name="add" value="new" id="tab">
+      <label for="tab">Add Family Member</label>
 
   </form>
 
   <form action="/add" method="post">
     <input type="text" name="country" autofocus placeholder="<%= locals.error ? error :  'Enter country name'%>">
-    <button type="submit" style="background-color: <%= color %>;">Add</button>
+    <button type="submit" style="background-color: <%= colour %>;">Add</button>
   </form>
 
   <section class="ag-canvas">
@@ -391,7 +391,7 @@
     const country_codes = "<%= countries %>".split(",")
     console.log(typeof ("<%= countries %>"))
     country_codes.forEach(code => {
-      document.getElementById(code).style.fill = "<%= color %>"
+      document.getElementById(code).style.fill = "<%= colour %>"
     });
   </script>
 </body>
