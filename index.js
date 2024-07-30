@@ -18,6 +18,13 @@ const db = new pg.Client({
 
 db.connect();
 
+let currentUserId = 1;
+
+let users = [
+  { id: 1, name: "Angela", color: "teal" },
+  { id: 2, name: "Jack", color: "powderblue" },
+];
+
 async function checkVisitedCountries(){
   const result = await db.query("SELECT * FROM visited_countries");
   return result.rows.map(country => country.country_code);
@@ -26,7 +33,12 @@ async function checkVisitedCountries(){
 app.get("/", async (req, res) => {
   const visited_countries = await checkVisitedCountries();
 
-  res.render("index.ejs", {countries: visited_countries, total: visited_countries.length})
+  res.render("index.ejs", {
+    countries: visited_countries, 
+    total: visited_countries.length,
+    users: users,
+    color: "teal"
+  })
 
 });
 
@@ -44,12 +56,22 @@ app.post("/add", async (req, res) => {
 
     } catch(error) {
       const visited_countries = await checkVisitedCountries();
-      res.render("index.ejs", {countries: visited_countries, total: visited_countries.length, error: "Country has already been added, try again.",})
+      res.render("index.ejs", {
+        countries: visited_countries, 
+        total: visited_countries.length, 
+        users: users,
+        color: "teal",
+        error: "Country has already been added, try again.",})
     }
   } catch (error) {
     console.log(error);
     const visited_countries = await checkVisitedCountries();
-    res.render("index.ejs", {countries: visited_countries, total: visited_countries.length, error: "Country name does not exist, try again."})
+    res.render("index.ejs", {
+      countries: visited_countries,
+      total: visited_countries.length, 
+      users: users,
+      color: "teal",
+      error: "Country name does not exist, try again."})
   }
 
 })
