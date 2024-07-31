@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS public.visited_countries
     id serial NOT NULL,
     country_code character(2) COLLATE pg_catalog."default" NOT NULL,
     user_id integer,
-    CONSTRAINT visited_countries_pkey PRIMARY KEY (id)
+    CONSTRAINT visited_countries_pkey PRIMARY KEY (id),
+    CONSTRAINT visited_countries_user_id_country_code_key UNIQUE (user_id, country_code)
 );
 
 CREATE TABLE IF NOT EXISTS public.world_food
